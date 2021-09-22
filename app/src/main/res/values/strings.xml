@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AReader-Test</string>
+    <string name="password">Passowrd</string>
 </resources>

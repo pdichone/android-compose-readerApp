@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bawp.areader_test.components.ReaderLogo
-import com.bawp.areader_test.navigation.ReadScreen
+import com.bawp.areader_test.navigation.ReaderScreens
 import kotlinx.coroutines.delay
 
 
@@ -34,7 +34,7 @@ fun ReaderSplashScreen(navController: NavController? = null) {
             OvershootInterpolator(8f).getInterpolation(it)
         }))
         delay(5000L)
-        navController?.navigate(ReadScreen.LoginScreen.name)
+        navController?.navigate(ReaderScreens.LoginScreen.name)
     }
     //Logo intro stuff
     Surface(modifier = Modifier

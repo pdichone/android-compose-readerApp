@@ -1,10 +1,8 @@
 package com.bawp.areader_test.navigation
 
-import android.window.SplashScreen
-
-enum class ReadScreen(
+enum class ReaderScreens(
     val label: String
-                     ) {
+                        ) {
     SplashScreen("Splash"),
     LoginScreen("Login"),
     CreateAccountScreen("Account"),
@@ -13,7 +11,7 @@ enum class ReadScreen(
     DetailScreen("Details");
 
     companion object {
-        fun fromRoute(route: String?): ReadScreen = when (route?.substringBefore("/")) {
+        fun fromRoute(route: String?): ReaderScreens = when (route?.substringBefore("/")) {
             SplashScreen.name -> SplashScreen
             LoginScreen.name -> LoginScreen
             CreateAccountScreen.name -> CreateAccountScreen
