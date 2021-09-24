@@ -20,7 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bawp.areader_test.components.ReaderLogo
 import com.bawp.areader_test.navigation.ReaderScreens
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
+import com.google.firebase.firestore.FirebaseFirestore
+
+
+
 
 
 @Composable
@@ -33,8 +38,10 @@ fun ReaderSplashScreen(navController: NavController? = null) {
         scale.animateTo( targetValue = 0.9f, animationSpec = tween(durationMillis = 800, easing = {
             OvershootInterpolator(8f).getInterpolation(it)
         }))
-        delay(5000L)
-        navController?.navigate(ReaderScreens.LoginScreen.name)
+        delay(2000L)
+        //if there's a fb user, take user to Home Screen
+       if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) navController?.navigate(ReaderScreens.LoginScreen.name)
+        else navController?.navigate(ReaderScreens.ReaderHomeScreen.name)
     }
     //Logo intro stuff
     Surface(modifier = Modifier

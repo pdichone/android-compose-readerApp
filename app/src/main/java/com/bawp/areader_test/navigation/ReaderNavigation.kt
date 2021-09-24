@@ -28,23 +28,47 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.bawp.areader_test.screens.ReaderLoginScreen
-import com.bawp.areader_test.screens.ReaderSplashScreen
+import androidx.navigation.navArgument
+import com.bawp.areader_test.network.BooksViewModel
+import com.bawp.areader_test.screens.*
 
 
 @ExperimentalComposeUiApi
 @Composable
 fun ReaderNavigation() {
     val navController = rememberNavController()
+
     NavHost(navController = navController, startDestination = ReaderScreens.SplashScreen.name){
         composable(ReaderScreens.SplashScreen.name, ){
              ReaderSplashScreen(navController = navController)
         }
         composable(ReaderScreens.LoginScreen.name){
             ReaderLoginScreen(navController = navController)
+        }
+
+        composable(ReaderScreens.ReaderHomeScreen.name){
+            Home(navController = navController)
+        }
+        composable(ReaderScreens.SearchScreen.name){
+            SearchScreen(navController = navController)
+        }
+
+        val detailsName = ReaderScreens.DetailScreen.name
+        //to pass an actual object in navigation: https://www.youtube.com/watch?v=OgYfQNbl0ts&ab_channel=KiloLoco
+
+        composable(
+            "$detailsName/{title}",
+                  arguments = listOf(navArgument("title"){
+                      type = NavType.StringType
+                  })){ backStackEntry ->
+             backStackEntry.arguments?.getString("title").let {
+                 BookDetailsScreen(navController = navController, text = it.toString())
+             }
+
         }
 
     }

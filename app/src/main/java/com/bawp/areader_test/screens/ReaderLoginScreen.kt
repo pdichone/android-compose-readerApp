@@ -21,7 +21,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -29,74 +28,138 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bawp.areader_test.components.ReaderLogo
-import com.bawp.areader_test.navigation.ReaderScreens
 import com.bawp.areader_test.ui.utils.EmailInput
 import com.bawp.areader_test.ui.utils.PasswordInput
 import com.bawp.areader_test.ui.utils.SubmitButton
+import androidx.annotation.NonNull
+import com.bawp.areader_test.model.LoginScreenViewModel
+import com.bawp.areader_test.navigation.ReaderScreens
+import com.bawp.areader_test.ui.utils.LoadingState
+
+import com.google.android.gms.tasks.OnFailureListener
+
+import com.google.firebase.firestore.DocumentReference
+
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 
 
 @ExperimentalComposeUiApi
 @Composable
-fun ReaderLoginScreen(navController: NavController? = null) {
+fun ReaderLoginScreen(navController: NavController? = null, viewModel: LoginScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val showLoginForm = rememberSaveable{ mutableStateOf(true) }
-   
+    val state by viewModel.loadingState.collectAsState()
+
+    val db = FirebaseFirestore.getInstance()
+    val user: MutableMap<String, Any> = HashMap()
+// Add a new document with a generated ID
+
 
     Surface( modifier = Modifier.fillMaxSize()) {
 
         Column(horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
+            verticalArrangement = Arrangement.Top) {
             ReaderLogo()
+           if(showLoginForm.value) UserForm(false) { email, password ->
 
-           if(showLoginForm.value) LoginUserForm(false) { email, password ->
-               Log.d("TAG", "ReaderLoginScreen: $email and $password") } else Box(modifier = Modifier.size(89.dp).background(
-               Color.Green)) {
+               viewModel.signInWithEmailAndPassword(email, password){
+                   navController?.navigate(ReaderScreens.ReaderHomeScreen.name)
+               }
+//               Log.d("TAG", "ReaderLoginScreen: $email and $password")
+//               user["email"] = email
+//               user["password"] = password
+//               user["born"] = 1815
 
+           }
+           else UserForm(loading = false, isCreateAccount = true){ email, password ->
+               Log.d("TAG", "CreateAccount: $email and $password")
+               //create account and login
+               //createUserAndLogin(email, password, navController)
+               viewModel.createUserWEmailAndPassword(email.trim(), password.trim()){
+                   navController?.navigate(ReaderScreens.ReaderHomeScreen.name)
+               }
+
+
+           }
            }
             Spacer(modifier = Modifier.height(15.dp))
 
             Row(
-                modifier = Modifier.padding(2.dp),
-                horizontalArrangement = Arrangement.SpaceAround
+                modifier = Modifier.padding(bottom = 15.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
                ){
-                var text = if (showLoginForm.value)  "Sign up" else "Login"
-
+                val text = if (showLoginForm.value) "Sign up" else "Login"
                 Text("New User?")
-               Text(text,
+                Text(text,
                     modifier = Modifier
                         .clickable {
                             showLoginForm.value = !showLoginForm.value
                             //swap login with create account form
                             // navController?.navigate(ReaderScreens.CreateAccountScreen.name)
                             /* TODO - Go to Sign up screen */
+
+                            // Add a new document with a generated ID
+//                            db
+//                                .collection("users")
+//                                .add(user)
+//                                .addOnSuccessListener { documentReference ->
+//                                    Log.d("TAG",
+//                                        "DocumentSnapshot added with ID: " + documentReference.id)
+//                                }
+//                                .addOnFailureListener { e ->
+//                                    Log.w("TAG", "Error adding document", e)
+//                                }
+
                         }
                         .padding(start = 5.dp),
+
                     fontWeight = FontWeight.Bold,
-                    color = Color.DarkGray)
+                    color = MaterialTheme.colors.secondaryVariant)
             }
         }
 
     }
 
-}
+fun createUserAndLogin(email: String, password: String, navController: NavController?) {
+    val auth: FirebaseAuth = Firebase.auth
 
+    auth.createUserWithEmailAndPassword( email, password)
+        .addOnCompleteListener(){ task ->
+            if (task.isSuccessful) {
+                val user = auth.currentUser
+                Log.d("TAG", "CreateUserAndLogin: ${user?.email}")
+                //go to next screen
+                navController?.navigate(ReaderScreens.ReaderHomeScreen.name)
+
+            }else {
+                Log.w("Firebase", "CreateUser Failed", task.exception)
+            }
+
+        }
+}
 
 /*
  @author: https://github.com/ameencarpenter/login-template/blob/master/app/src/main/java/com/carpenter/login/utils/uiUtils.kt
 
  */
-//@ExperimentalComposeUiApi
+@ExperimentalComposeUiApi
 @Composable
-fun LoginUserForm( loading: Boolean = false,
-                 onDone: (String, String) -> Unit ) {
+fun UserForm(
+    loading: Boolean = false, isCreateAccount: Boolean = false,
+    onDone: (String, String) -> Unit,
+            ) {
     val email = rememberSaveable{ mutableStateOf("")}
     val password = rememberSaveable{ mutableStateOf("") }
     val passwordVisibility = rememberSaveable { mutableStateOf(false) }
     val passwordFocusRequester = FocusRequester.Default
-    //val keyboardController = LocalSoftwareKeyboardController.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val valid = remember(email.value, password.value) {
         email.value.trim().isNotEmpty() && password.value.trim().isNotEmpty()
     }
@@ -107,9 +170,15 @@ fun LoginUserForm( loading: Boolean = false,
         .verticalScroll(rememberScrollState())
 
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+
+        if (isCreateAccount) Text(text = "Please enter a valid email and password that is at least 6 characters",
+                                 modifier = Modifier.padding(4.dp)) else {
+            Text(text = "")
+        }
         EmailInput(emailState = email, enabled = !loading, onAction = KeyboardActions {
             passwordFocusRequester.requestFocus()
         })
+
         PasswordInput(
             modifier = Modifier.focusRequester(passwordFocusRequester),
             passwordState = password,
@@ -124,17 +193,15 @@ fun LoginUserForm( loading: Boolean = false,
             }
                      )
         SubmitButton(
-            textId = "Login" ,
+            textId = if (isCreateAccount) "Create Account" else "Login" ,
             loading = loading,
             validInputs = valid
                     ) {
             onDone(email.value.trim(), password.value.trim())
-           // keyboardController?.hide()
+            keyboardController?.hide()
         }
 
-
     }
-
 
 }
 
@@ -142,9 +209,8 @@ fun LoginUserForm( loading: Boolean = false,
  * @author: https://github.com/iampawan/JetpackComposeLooks/blob/master/app/src/main/java/com/example/composelookstutorial/composables/LoginPage1.kt
  *
  */
-
 @Composable
-fun MainCard() {
+fun AlternativeLoginForm() {
     val emailState = remember { mutableStateOf(TextFieldValue("")) }
     val passState = remember { mutableStateOf(TextFieldValue("")) }
     Surface(color = Color.White, modifier = Modifier

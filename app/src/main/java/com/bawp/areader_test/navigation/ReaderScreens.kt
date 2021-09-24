@@ -1,12 +1,14 @@
 package com.bawp.areader_test.navigation
 
+import androidx.compose.ui.input.key.Key.Companion.Home
+
 enum class ReaderScreens(
     val label: String
                         ) {
     SplashScreen("Splash"),
     LoginScreen("Login"),
     CreateAccountScreen("Account"),
-    Home("Home"),
+    ReaderHomeScreen("Home"),
     SearchScreen(label = "Search"),
     DetailScreen("Details");
 
@@ -15,10 +17,10 @@ enum class ReaderScreens(
             SplashScreen.name -> SplashScreen
             LoginScreen.name -> LoginScreen
             CreateAccountScreen.name -> CreateAccountScreen
-            Home.name -> Home
+            ReaderHomeScreen.name -> ReaderHomeScreen
             SearchScreen.name -> SearchScreen
             DetailScreen.name -> DetailScreen
-            null -> Home
+            null -> ReaderHomeScreen
             else -> throw IllegalArgumentException("Route $route is not recognized")
         }
     }

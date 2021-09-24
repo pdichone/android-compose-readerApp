@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "383857292012",
+    "project_id": "composeareader-test",
+    "storage_bucket": "composeareader-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383857292012:android:a4de8e53e5bfd427366bc9",
+        "android_client_info": {
+          "package_name": "com.bawp.areader_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383857292012-sfk3fpt9hk246iqvor9ftocu8t78c34v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-uxGohf2VNCvqBwiYiDf2-2oeQFD12r0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383857292012-sfk3fpt9hk246iqvor9ftocu8t78c34v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

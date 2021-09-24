@@ -26,6 +26,23 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
+data class LoadingState (val status: Status, val msg: String? = null) {
+    companion object {
+        val LOADED = LoadingState(Status.SUCCESS)
+        val IDLE = LoadingState(Status.IDLE)
+        val LOADING = LoadingState(Status.RUNNING)
+        fun error(msg: String?) = LoadingState(Status.FAILED, msg)
+    }
+
+    enum class Status {
+        RUNNING,
+        SUCCESS,
+        FAILED,
+        IDLE,
+    }
+}
+
 @Composable
 fun BurgerLayout(
     coverId: Int? = null,
