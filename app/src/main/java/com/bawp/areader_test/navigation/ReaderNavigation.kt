@@ -10,6 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bawp.areader_test.data.BooksListViewModel
 import com.bawp.areader_test.screens.*
+import com.bawp.areader_test.screens.details.BookDetailViewModel
+import com.bawp.areader_test.screens.details.BookDetailsScreen
 import com.bawp.areader_test.screens.login.ReaderLoginScreen
 
 
@@ -40,10 +42,10 @@ fun ReaderNavigation() {
         val detailsName = ReaderScreens.DetailScreen.name
         //to pass an actual object in navigation: https://www.youtube.com/watch?v=OgYfQNbl0ts&ab_channel=KiloLoco
 
-        composable(ReaderScreens.DetailScreen.name){
-            //val mViewModel = hiltViewModel<BooksListViewModel>()
-            BookDetailsScreen(navController = navController)
-        }
+//        composable(detailsName){
+//            //val mViewModel = hiltViewModel<BooksListViewModel>()
+//            BookDetailsScreen(navController = navController)
+//        }
 //        composable(
 //            "$detailsName/{title}",
 //                  arguments = listOf(navArgument("title"){
@@ -52,8 +54,19 @@ fun ReaderNavigation() {
 //             backStackEntry.arguments?.getString("title").let {
 //                 BookDetailsScreen(navController = navController, text = it.toString())
 //             }
-//
-//        }
+
+        composable(
+            "$detailsName/{bookId}",
+            arguments = listOf(navArgument("bookId"){
+                type = NavType.StringType
+            })){ backStackEntry ->
+            backStackEntry.arguments?.getString("bookId").let {
+                val viewModel = hiltViewModel<BookDetailViewModel>()
+                BookDetailsScreen(navController = navController, bookId = it.toString(),
+                                 viewModel)
+            }
+
+        }
 
     }
 }

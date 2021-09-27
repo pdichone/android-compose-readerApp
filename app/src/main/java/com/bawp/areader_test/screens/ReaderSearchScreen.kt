@@ -1,6 +1,5 @@
 package com.bawp.areader_test.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,7 +21,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.bawp.areader_test.data.BooksListViewModel
-import com.bawp.areader_test.model.Item
+import com.bawp.areader_test.model.Book
 import com.bawp.areader_test.navigation.ReaderScreens
 import com.bawp.areader_test.ui.utils.InputField
 import java.util.*
@@ -137,7 +135,7 @@ fun BookList(
 
 @Composable
 fun BookRow(
-    book: Item,
+    book: Book,
     navController: NavController
            ) {
 
@@ -145,8 +143,8 @@ fun BookRow(
         .clickable {
             //TODO: Go to Details Screen
             //go to details screen and show more about the book
-             Log.d("Click", "BookRow===>: ${book.volumeInfo.imageLinks!!.smallThumbnail}")
-            navController.navigate(ReaderScreens.DetailScreen.name)
+            // Log.d("Click", "BookRow===>: ${book.volumeInfo.imageLinks!!.smallThumbnail}")
+            navController.navigate(ReaderScreens.DetailScreen.name+"/${book.id}")
         }
         .fillMaxWidth()
         .height(100.dp)

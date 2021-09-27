@@ -26,7 +26,10 @@ import com.bawp.areader_test.navigation.ReaderNavigation
 import com.bawp.areader_test.navigation.ReaderScreens
 import com.bawp.areader_test.ui.theme.AReaderTestTheme
 import dagger.hilt.android.AndroidEntryPoint
+/*
+  Hilt/Dagger setup: https://dagger.dev/hilt/gradle-setup.html
 
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
