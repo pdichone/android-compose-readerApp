@@ -5,12 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,17 +25,11 @@ import androidx.navigation.compose.rememberNavController
 import com.bawp.areader_test.navigation.ReaderNavigation
 import com.bawp.areader_test.navigation.ReaderScreens
 import com.bawp.areader_test.ui.theme.AReaderTestTheme
-<<<<<<< HEAD
 import dagger.hilt.android.AndroidEntryPoint
-/*
-  Hilt/Dagger setup: https://dagger.dev/hilt/gradle-setup.html
 
- */
 @AndroidEntryPoint
-=======
-
->>>>>>> parent of 983f2eb (Hilt, repository and Viewmodel setup)
 class MainActivity : ComponentActivity() {
+
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,6 +96,7 @@ fun AppBar(title: String, icon: ImageVector? = null, showProfile:Boolean = true)
 @ExperimentalComposeUiApi
 @Composable
 fun ReaderApp() {
+
      Surface( modifier = Modifier
          .fillMaxSize()
          .padding(10.dp)) {

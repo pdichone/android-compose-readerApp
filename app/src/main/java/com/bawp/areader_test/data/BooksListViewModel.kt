@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bawp.areader_test.model.Book
+import com.bawp.areader_test.model.Item
 import com.bawp.areader_test.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,8 +18,7 @@ class BooksListViewModel @Inject constructor(
     private val repository: BookRepository
                                             ): ViewModel() {
 
-    var bookList: List<Book> by mutableStateOf(listOf())
-
+    var bookList: List<Item> by mutableStateOf(listOf())
 
     init {
         loadBooks()
@@ -28,8 +27,6 @@ class BooksListViewModel @Inject constructor(
     private fun loadBooks() {
         searchBooks("android")
     }
-
-
     fun searchBooks(query: String) {
         viewModelScope.launch(Dispatchers.Default) {
             if (query.isEmpty()) {
@@ -40,7 +37,7 @@ class BooksListViewModel @Inject constructor(
                 when(val response = repository.getBooks(query)) {
                     is BookRepository.Result.Success -> {
                         Log.d("MainViewModel", "fetchBooks: Success")
-                        bookList = response.bookList
+                        bookList = response.itemList
 
                     }
                     is BookRepository.Result.Failure -> {
