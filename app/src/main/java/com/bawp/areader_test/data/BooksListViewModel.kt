@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bawp.areader_test.model.Book
 import com.bawp.areader_test.model.Item
 import com.bawp.areader_test.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
