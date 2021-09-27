@@ -1,19 +1,23 @@
-package com.bawp.areader_test.data
+package com.bawp.areader_test.repository
 
 import android.util.Log
 import com.bawp.areader_test.model.Item
-import com.bawp.areader_test.network.GoogleBooksApiService
+import com.bawp.areader_test.network.BooksApi
+import javax.inject.Inject
 
-class BookRepository(val booksApiService: GoogleBooksApiService) {
+class BookRepository @Inject constructor(
+    private val api: BooksApi
+                                        ) {
+
     sealed class Result {
         object LOADING : Result()
         data class Success(val itemList : List<Item>) :Result()
         data class Failure(val throwable: Throwable): Result()
     }
-    suspend fun fetchBooks(query: String):Result{
+    suspend fun getBooks(searchQuery: String): Result {
         return try {
-            val itemList = booksApiService.getAllBooks(query).items
-            Log.d("ItemList","success "+itemList.size)
+            val itemList = api.getAllBooks(searchQuery).items
+            Log.d("ItemList", "success ${itemList.size}")
             Result.Success(itemList = itemList)
         }catch (exception:Exception){
             Log.d("MOVIELIST","failure ")

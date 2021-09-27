@@ -1,4 +1,4 @@
-package com.bawp.areader_test.model
+package com.bawp.areader_test.screens.login
 
 import android.util.Log
 import androidx.lifecycle.LiveData

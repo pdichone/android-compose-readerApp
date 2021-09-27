@@ -1,4 +1,4 @@
-package com.bawp.areader_test.screens
+package com.bawp.areader_test.screens.login
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -29,21 +29,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bawp.areader_test.components.ReaderLogo
 import com.bawp.areader_test.ui.utils.EmailInput
 import com.bawp.areader_test.ui.utils.PasswordInput
 import com.bawp.areader_test.ui.utils.SubmitButton
-import androidx.annotation.NonNull
-import com.bawp.areader_test.model.LoginScreenViewModel
 import com.bawp.areader_test.navigation.ReaderScreens
-import com.bawp.areader_test.ui.utils.LoadingState
 
-import com.google.android.gms.tasks.OnFailureListener
-
-import com.google.firebase.firestore.DocumentReference
-
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -52,7 +45,7 @@ import com.google.firebase.ktx.Firebase
 
 @ExperimentalComposeUiApi
 @Composable
-fun ReaderLoginScreen(navController: NavController? = null, viewModel: LoginScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun ReaderLoginScreen(navController: NavController? = null, viewModel: LoginScreenViewModel = viewModel()) {
     val showLoginForm = rememberSaveable{ mutableStateOf(true) }
     val state by viewModel.loadingState.collectAsState()
 
