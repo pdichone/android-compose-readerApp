@@ -1,28 +1,46 @@
 package com.bawp.areader_test.repository
 
 import android.util.Log
-import com.bawp.areader_test.model.Book
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.bawp.areader_test.data.DataOrException
 import com.bawp.areader_test.model.Item
+import com.bawp.areader_test.model.MBook
 import com.bawp.areader_test.network.BooksApi
+import com.bawp.areader_test.utils.Resource
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 import javax.inject.Inject
 
 class BookRepository @Inject constructor(
     private val api: BooksApi
                                         ) {
-    sealed class Result {
-        object LOADING : Result()
-        data class Success(val itemList : List<Item>) :Result()
-        data class Failure(val throwable: Throwable): Result()
-    }
-    suspend fun getBooks(searchQuery: String): Result {
+    suspend fun getBooks(searchQuery: String): Resource<List<Item>> {
         return try {
             val itemList = api.getAllBooks(searchQuery).items
             Log.d("ItemList", "success ${itemList.size}")
-            Result.Success(itemList = itemList)
+            Resource.Success(data = itemList)
         }catch (exception:Exception){
-            Log.d("MOVIELIST","failure ")
+            Log.d("BookList","failure ")
+            Resource.Error(message = exception.message.toString())
 
-            Result.Failure(exception)
         }
     }
+
+    suspend fun getBookInfo(bookId: String): Resource<Item> {
+        val response = try {
+            api.getBookInfo(bookId)
+
+        }catch (e: Exception){
+            return Resource.Error("An error occurred")
+        }
+        return Resource.Success(response)
+
+    }
+
+
+
 }

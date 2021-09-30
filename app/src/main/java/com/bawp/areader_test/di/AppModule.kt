@@ -2,7 +2,10 @@ package com.bawp.areader_test.di
 
 import com.bawp.areader_test.network.BooksApi
 import com.bawp.areader_test.repository.BookRepository
-import com.bawp.areader_test.ui.utils.Constants
+import com.bawp.areader_test.repository.FireRepository
+import com.bawp.areader_test.utils.Constants
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +25,11 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideFireBookRepository(
+                             ) = FireRepository(queryBooks = FirebaseFirestore.getInstance().collection("books"))
+
+    @Singleton
+    @Provides
     fun provideBookApi(): BooksApi {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
@@ -29,5 +37,14 @@ object AppModule {
             .build()
             .create(BooksApi::class.java)
     }
+
+    //for Firestore stuff: https://medium.com/firebase-developers/how-to-display-data-from-firestore-using-jetpack-compose-49ee736dc07d
+
+//    @Provides
+//    @Singleton
+//    fun provideQueryBooks() = FirebaseFirestore.getInstance()
+//        .collection("books")
+//       // .orderBy(NAME_PROPERTY, ASCENDING)
+//
 
 }

@@ -5,15 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.bawp.areader_test.ui.utils.LoadingState
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.AuthCredential
+import com.bawp.areader_test.model.MUser
+import com.bawp.areader_test.utils.LoadingState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.auth.User
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -28,23 +24,42 @@ class LoginScreenViewModel : ViewModel() {
 //    private val _currentUser = MutableLiveData(FirebaseAuth.getInstance().currentUser)
 //     val currentUser: MutableLiveData<FirebaseUser?> = _currentUser
 
-    fun createUserWEmailAndPassword(
+    fun createUserWithEmailAndPassword(
         email: String,
         password: String,
         home: () -> Unit,
-                                   ){
+                                      ){
          if (_loading.value == false) {
              _loading.value = true
              auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
                      task ->
                  if (task.isSuccessful) {
-                     Log.d("TAG", "ModelView::Success!!!-->: ${task.result?.user?.email}")
+                     val displayName = task.result?.user?.email.toString().split('@')[0]
+                     createUser(displayName)
+
+                    // Log.d("TAG", "ModelView::Success!!!-->: ${task.result?.user?.email}")
                       home()
                  }
                  _loading.value = false
              }
          }
     }
+
+    private fun createUser(displayName: String) {
+        val userId = auth.currentUser?.uid
+        val user = MUser(
+               userId = userId!!,
+               displayName = displayName,
+                        avatarUrl = "https://i.pravatar.cc/300",
+                        quote = "Hello there",
+                        profession = "Android Developer",
+                        id = null).toMap()
+        //Log.d("MUser", "createUser: ${user.toMap()}")
+        FirebaseFirestore.getInstance().collection("users")
+            .add(user)
+
+    }
+
     fun signInWithEmailAndPassword(email: String, password: String, home: () -> Unit) = viewModelScope.launch {
         Log.d("Call", "Calling = createUserWithEmailAndPassword: ")
         try {
@@ -52,7 +67,7 @@ class LoginScreenViewModel : ViewModel() {
                     task ->
                 if (task.isSuccessful) {
                     home()
-                    Log.d("TAG", "ModelView::Success!!!-->: ${task.result?.user?.email}")
+
                 }else {
                     Log.d("Failed", "Failed!!: ${task.result.toString()}")
                 }
@@ -62,13 +77,5 @@ class LoginScreenViewModel : ViewModel() {
         }
     }
 
-//    fun signWithCredential(credential: AuthCredential) = viewModelScope.launch {
-//        try {
-//            loadingState.emit(LoadingState.LOADING)
-//            Firebase.auth.signInWithCredential(credential).await()
-//            loadingState.emit(LoadingState.LOADED)
-//        } catch (e: Exception) {
-//            loadingState.emit(LoadingState.error(e.localizedMessage))
-//        }
-//    }
+//
 }

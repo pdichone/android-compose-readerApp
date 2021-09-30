@@ -1,6 +1,5 @@
-package com.bawp.areader_test.screens
+package com.bawp.areader_test.screens.search
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,7 +21,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,10 +30,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
-import com.bawp.areader_test.data.BooksListViewModel
 import com.bawp.areader_test.model.Item
 import com.bawp.areader_test.navigation.ReaderScreens
-import com.bawp.areader_test.ui.utils.InputField
+import com.bawp.areader_test.screens.details.DetailsViewModel
+import com.bawp.areader_test.utils.InputField
 import java.util.*
 
 
@@ -44,13 +42,13 @@ import java.util.*
 fun SearchScreen(
     label: String = "search",
     navController: NavController,
-    viewModel: BooksListViewModel = hiltViewModel(),
+    viewModel: BooksSearchViewModel = hiltViewModel(),
                 ) {
 
     Scaffold(
         topBar = {
             AppBar(title = "Search books", icon = Icons.Default.ArrowBack, showProfile = false){
-                navController.popBackStack()
+                navController.navigate(ReaderScreens.ReaderHomeScreen.name)
             }
 
         },)
@@ -99,7 +97,7 @@ fun SearchForm(
 //            .shadow(5.dp, CircleShape)
 //            .background(Color.White, CircleShape)
 //            .padding(horizontal = 20.dp, vertical = 12.dp),
-            valueState = searchQuery, labelId = "Android development" ,
+            valueState = searchQuery, labelId = "Search" ,
             enabled = true, onAction = KeyboardActions {
                 //The submit button is disabled unless the inputs are valid. wrap this in if statement to accomplish the same.
                 if (!valid) return@KeyboardActions
@@ -115,18 +113,18 @@ fun SearchForm(
 @Composable
 fun BookList(
     navController: NavController,
-    viewModel: BooksListViewModel = hiltViewModel(),
+    viewModel: BooksSearchViewModel = hiltViewModel(),
             ) {
-    val bookList = remember {
-        viewModel.bookList
-    }
+//    val bookList = remember {
+//        viewModel.list
+//    }
 
     LazyColumn(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight(),
         contentPadding = PaddingValues(16.dp)) {
 
-        items(items = viewModel.bookList) { item ->
+        items(items = viewModel.list) { item ->
             BookRow(book = item, navController = navController)
 
 
@@ -138,15 +136,16 @@ fun BookList(
 @Composable
 fun BookRow(
     book: Item,
-    navController: NavController
+    navController: NavController,
+    viewModel: DetailsViewModel = hiltViewModel(),
            ) {
 
     Card(modifier = Modifier
         .clickable {
-            //TODO: Go to Details Screen
+
             //go to details screen and show more about the book
-             Log.d("Click", "BookRow===>: ${book.volumeInfo.imageLinks!!.smallThumbnail}")
-            navController.navigate(ReaderScreens.DetailScreen.name)
+            // Log.d("Click", "BookRow===>: ${book.volumeInfo.imageLinks!!.smallThumbnail}")
+            navController.navigate(ReaderScreens.DetailScreen.name + "/${book.id}")
         }
         .fillMaxWidth()
         .height(100.dp)
@@ -156,9 +155,19 @@ fun BookRow(
 
         Row( modifier = Modifier.padding(5.dp),
             verticalAlignment = Alignment.Top) {
+            var imageUrl = ""
+//            val photoUrl = remember {
+//                mutableStateOf(value = book.volumeInfo.imageLinks!!.smallThumbnail)
+//            }
+            imageUrl = if(book.volumeInfo.imageLinks?.smallThumbnail?.isEmpty() == true){
+                "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=80&q=80"
+
+            }else {
+                book.volumeInfo.imageLinks?.smallThumbnail.toString()
+            }
 
             Image(
-                painter = rememberImagePainter(book.volumeInfo.imageLinks!!.smallThumbnail),
+                painter = rememberImagePainter(imageUrl),
                 contentDescription = null,
                 modifier = Modifier
                     .width(80.dp)
@@ -185,12 +194,7 @@ fun BookRow(
                     style = MaterialTheme.typography.caption)
 
             }
-
-
-
-
         }
-
     }
 }
 

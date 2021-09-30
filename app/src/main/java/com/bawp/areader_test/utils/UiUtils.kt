@@ -1,4 +1,4 @@
-package com.bawp.areader_test.ui.utils
+package com.bawp.areader_test.utils
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

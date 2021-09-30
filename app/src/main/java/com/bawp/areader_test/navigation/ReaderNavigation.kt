@@ -8,9 +8,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.bawp.areader_test.data.BooksListViewModel
+import com.bawp.areader_test.screens.search.BooksSearchViewModel
 import com.bawp.areader_test.screens.*
+import com.bawp.areader_test.screens.details.BookDetailsScreen
+import com.bawp.areader_test.screens.home.Home
+import com.bawp.areader_test.screens.home.HomeScreenViewModel
 import com.bawp.areader_test.screens.login.ReaderLoginScreen
+import com.bawp.areader_test.screens.search.SearchScreen
 
 
 @ExperimentalComposeUiApi
@@ -28,32 +32,33 @@ fun ReaderNavigation() {
         }
 
         composable(ReaderScreens.ReaderHomeScreen.name){
-            Home(navController = navController)
+            val homeViewModel = hiltViewModel<HomeScreenViewModel>()
+            Home(navController = navController, viewModel = homeViewModel)
         }
 
 
         composable(ReaderScreens.SearchScreen.name){
-            val mViewModel = hiltViewModel<BooksListViewModel>()
+            val mViewModel = hiltViewModel<BooksSearchViewModel>()
             SearchScreen(navController = navController,  viewModel = mViewModel)
         }
 
         val detailsName = ReaderScreens.DetailScreen.name
         //to pass an actual object in navigation: https://www.youtube.com/watch?v=OgYfQNbl0ts&ab_channel=KiloLoco
 
-        composable(ReaderScreens.DetailScreen.name){
-            //val mViewModel = hiltViewModel<BooksListViewModel>()
-            BookDetailsScreen(navController = navController)
-        }
-//        composable(
-//            "$detailsName/{title}",
-//                  arguments = listOf(navArgument("title"){
-//                      type = NavType.StringType
-//                  })){ backStackEntry ->
-//             backStackEntry.arguments?.getString("title").let {
-//                 BookDetailsScreen(navController = navController, text = it.toString())
-//             }
-//
+//        composable(ReaderScreens.DetailScreen.name){
+//            //val mViewModel = hiltViewModel<BooksListViewModel>()
+//            BookDetailsScreen(navController = navController)
 //        }
+        composable(
+            "$detailsName/{bookId}",
+                  arguments = listOf(navArgument("bookId"){
+                      type = NavType.StringType
+                  })){ backStackEntry ->
+             backStackEntry.arguments?.getString("bookId").let {
+                 BookDetailsScreen(navController = navController, bookId = it.toString())
+             }
+
+        }
 
     }
 }

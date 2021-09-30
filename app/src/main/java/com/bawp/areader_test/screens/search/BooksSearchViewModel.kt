@@ -1,4 +1,4 @@
-package com.bawp.areader_test.data
+package com.bawp.areader_test.screens.search
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -6,21 +6,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bawp.areader_test.model.Book
 import com.bawp.areader_test.model.Item
 import com.bawp.areader_test.repository.BookRepository
+import com.bawp.areader_test.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BooksListViewModel @Inject constructor(
+class BooksSearchViewModel @Inject constructor(
     private val repository: BookRepository
-                                            ): ViewModel() {
-
-    var bookList: List<Item> by mutableStateOf(listOf())
-
+                                              ): ViewModel() {
+    var list: List<Item> by mutableStateOf(listOf())
     init {
         loadBooks()
     }
@@ -36,12 +34,11 @@ class BooksListViewModel @Inject constructor(
             }
             try {
                 when(val response = repository.getBooks(query)) {
-                    is BookRepository.Result.Success -> {
+                    is Resource.Success -> {
                         Log.d("MainViewModel", "fetchBooks: Success")
-                        bookList = response.itemList
-
+                        list = response.data!!
                     }
-                    is BookRepository.Result.Failure -> {
+                    is Resource.Error -> {
                         Log.d("TAG", "fetchBooks: Failure")
                     }
                     else -> {}

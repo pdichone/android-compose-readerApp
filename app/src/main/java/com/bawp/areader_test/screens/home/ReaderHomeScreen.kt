@@ -1,4 +1,4 @@
-package com.bawp.areader_test.screens
+package com.bawp.areader_test.screens.home
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -19,17 +19,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import com.bawp.areader_test.AppBar
+
 import com.bawp.areader_test.navigation.ReaderScreens
-import com.bawp.jetstate.readerapp.readerapp.HorizontalScrollableComponent
-import com.bawp.jetstate.readerapp.readerapp.TitleSection
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
+import com.bawp.areader_test.components.HorizontalScrollableComponent
+import com.bawp.areader_test.components.TitleSection
 import androidx.compose.material.Surface
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.bawp.areader_test.model.MBook
 
 @Composable
-fun Home(navController: NavController) {
+fun Home(
+    navController: NavController,
+     viewModel: HomeScreenViewModel = hiltViewModel()
+        ) {
+
+
     Scaffold(
         topBar = {
             ReaderAppBar(title = "A.Reader", icon = Icons.Default.Edit)
@@ -43,11 +47,14 @@ fun Home(navController: NavController) {
         },
 
         ) {
-        //content
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        //Text(text = "Home ${currentUser?.email}")
+
         Surface(modifier = Modifier.fillMaxSize()) {
-            HomeContent(navController = navController)
+
+//            val bookInfo = produceState(initialValue = DataOrException<List<MBook>, Exception>()) {
+//                value = viewModel.data.value
+//            }.value
+
+            HomeContent(navController = navController, items = viewModel.data.value.data!!)
         }
 
 
@@ -55,21 +62,36 @@ fun Home(navController: NavController) {
 }
 
 @Composable
-fun HomeContent(navController: NavController) {
-    var books = listOf("Gerry",
-        "Cabrito",
-        "Larisokco",
-        "nevel",
-        "carlos",
-        "Pinto",
-        "Louco",
-        "Louco",
-        "Louco")
+fun HomeContent(
+    navController: NavController,
+    items: List<MBook>
+               ) {
+    var listOfBooks = mutableListOf<MBook>()
+
+
+    //Log.d("SER", "HomeContent: ${books.size}")
+  if (!items.isNullOrEmpty()) {
+      listOfBooks = items.toMutableList()
+  }
+
+    Log.d("SIZE", "HomeContent: ${listOfBooks.size}")
+
+//    var bookss = listOf("Gerry",
+//        "Cabrito",
+//        "Larisokco",
+//        "nevel",
+//        "carlos",
+//        "Pinto",
+//        "Louco",
+//        "Louco",
+//        "Louco")
     Column(Modifier.padding(2.dp), verticalArrangement = Arrangement.SpaceEvenly) {
         TitleSection(label = "Your reading \n" + " activity right now...")
-        ReadingRightNowArea(books, navController)
+        ReadingRightNowArea(listOfBooks, navController)
         TitleSection(label = "Reading List")
-        BookListArea(books)
+        BookListArea(listOfBooks)
+
+
     }
 
 }
@@ -115,8 +137,7 @@ fun ReaderAppBar(
                     })
 
 
-            } else Surface() {}
-
+            } else Surface {}
 
         }
     }, backgroundColor = Color.Transparent, elevation = 0.dp)
@@ -124,28 +145,20 @@ fun ReaderAppBar(
 }
 
 
-@Composable
-fun MainContent(
-    allScreens: List<ReaderScreens>,
-    onClickedItem: (ReaderScreens) -> Unit,
-    currentScreen: ReaderScreens,
-               ) {
 
-    AppBar(title = "A.Reader", icon = Icons.Default.Edit)
-
-
-}
 
 @Composable
-fun ReadingRightNowArea(books: List<String>, navController: NavController) {
+fun ReadingRightNowArea(books: List<MBook>, navController: NavController) {
     HorizontalScrollableComponent(books){
-        navController.navigate(ReaderScreens.DetailScreen.name+"/$it")
-        Log.d("Read", "ReadingRightNowArea: $it")
+         //TODO: Go to UpdateBookScreen
+        //navController.navigate(ReaderScreens.DetailScreen.name+"/$it")
+        //Log.d("Read", "ReadingRightNowArea: $it")
+        Log.d("Tapped", "ReadingRightNowArea: ${books[0].id}")
     }
 }
 
 @Composable
-fun BookListArea(books: List<String>) {
+fun BookListArea(books: List<MBook>) {
     HorizontalScrollableComponent(books){}
 }
 
@@ -156,7 +169,7 @@ fun FABContent(onTap: (String) -> Unit) {
         shape = RoundedCornerShape(50), backgroundColor = MaterialTheme.colors.secondary) {
         IconButton(onClick = {
             onTap("")
-            //navigate to search scree
+
         }) {
             Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Book", tint = Color.Red)
 

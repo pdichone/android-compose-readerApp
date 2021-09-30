@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bawp.areader_test.components.ReaderLogo
-import com.bawp.areader_test.ui.utils.EmailInput
-import com.bawp.areader_test.ui.utils.PasswordInput
-import com.bawp.areader_test.ui.utils.SubmitButton
+import com.bawp.areader_test.utils.EmailInput
+import com.bawp.areader_test.utils.PasswordInput
+import com.bawp.areader_test.utils.SubmitButton
 import com.bawp.areader_test.navigation.ReaderScreens
 
 import com.google.firebase.auth.FirebaseAuth
@@ -49,11 +49,6 @@ fun ReaderLoginScreen(navController: NavController? = null, viewModel: LoginScre
     val showLoginForm = rememberSaveable{ mutableStateOf(true) }
     val state by viewModel.loadingState.collectAsState()
 
-    val db = FirebaseFirestore.getInstance()
-    val user: MutableMap<String, Any> = HashMap()
-// Add a new document with a generated ID
-
-
     Surface( modifier = Modifier.fillMaxSize()) {
 
         Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -64,21 +59,13 @@ fun ReaderLoginScreen(navController: NavController? = null, viewModel: LoginScre
                viewModel.signInWithEmailAndPassword(email, password){
                    navController?.navigate(ReaderScreens.ReaderHomeScreen.name)
                }
-//               Log.d("TAG", "ReaderLoginScreen: $email and $password")
-//               user["email"] = email
-//               user["password"] = password
-//               user["born"] = 1815
 
            }
            else UserForm(loading = false, isCreateAccount = true){ email, password ->
-               Log.d("TAG", "CreateAccount: $email and $password")
-               //create account and login
-               //createUserAndLogin(email, password, navController)
-               viewModel.createUserWEmailAndPassword(email.trim(), password.trim()){
+              // Log.d("TAG", "CreateAccount: $email and $password")
+               viewModel.createUserWithEmailAndPassword(email.trim(), password.trim()){
                    navController?.navigate(ReaderScreens.ReaderHomeScreen.name)
                }
-
-
            }
            }
             Spacer(modifier = Modifier.height(15.dp))
@@ -94,22 +81,6 @@ fun ReaderLoginScreen(navController: NavController? = null, viewModel: LoginScre
                     modifier = Modifier
                         .clickable {
                             showLoginForm.value = !showLoginForm.value
-                            //swap login with create account form
-                            // navController?.navigate(ReaderScreens.CreateAccountScreen.name)
-                            /* TODO - Go to Sign up screen */
-
-                            // Add a new document with a generated ID
-//                            db
-//                                .collection("users")
-//                                .add(user)
-//                                .addOnSuccessListener { documentReference ->
-//                                    Log.d("TAG",
-//                                        "DocumentSnapshot added with ID: " + documentReference.id)
-//                                }
-//                                .addOnFailureListener { e ->
-//                                    Log.w("TAG", "Error adding document", e)
-//                                }
-
                         }
                         .padding(start = 5.dp),
 
@@ -119,24 +90,6 @@ fun ReaderLoginScreen(navController: NavController? = null, viewModel: LoginScre
         }
 
     }
-
-fun createUserAndLogin(email: String, password: String, navController: NavController?) {
-    val auth: FirebaseAuth = Firebase.auth
-
-    auth.createUserWithEmailAndPassword( email, password)
-        .addOnCompleteListener(){ task ->
-            if (task.isSuccessful) {
-                val user = auth.currentUser
-                Log.d("TAG", "CreateUserAndLogin: ${user?.email}")
-                //go to next screen
-                navController?.navigate(ReaderScreens.ReaderHomeScreen.name)
-
-            }else {
-                Log.w("Firebase", "CreateUser Failed", task.exception)
-            }
-
-        }
-}
 
 /*
  @author: https://github.com/ameencarpenter/login-template/blob/master/app/src/main/java/com/carpenter/login/utils/uiUtils.kt
