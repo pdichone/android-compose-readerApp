@@ -5,6 +5,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.SystemUiController
 
 private val DarkColorPalette =
     darkColors(primary = Purple200, primaryVariant = Purple700, secondary = Teal200)
@@ -23,9 +25,15 @@ private val LightColorPalette =
 
 @Composable
 fun AReaderTestTheme(
+
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable() () -> Unit,
                     ) {
+    //Set the SystemBarcolor to transparent: https://google.github.io/accompanist/systemuicontroller/
+//    systemUiController?.setSystemBarsColor(
+//        color = Color.Transparent,
+//        darkIcons = true)
+
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {

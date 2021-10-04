@@ -26,7 +26,11 @@ object AppModule {
     @Singleton
     @Provides
     fun provideFireBookRepository(
-                             ) = FireRepository(queryBooks = FirebaseFirestore.getInstance().collection("books"))
+                             ) = FireRepository(queryBooks = FirebaseFirestore.getInstance()
+        .collection("books")
+        //TODO: show recently added first
+       /* .orderBy("title", Query.Direction.DESCENDING)*/
+                                               )
 
     @Singleton
     @Provides

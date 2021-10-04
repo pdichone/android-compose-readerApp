@@ -28,7 +28,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-
 @Composable
 fun BookDetailsScreen(
     navController: NavController,
@@ -56,6 +55,7 @@ fun BookDetailsScreen(
 @Composable
 fun ShowBookDetails(book: Resource<Item>, navController: NavController) {
     val bookData = book.data?.volumeInfo
+    val googleBookId = book.data?.id
     val isBookEmpty = remember {
         mutableStateOf(false)
     }
@@ -116,14 +116,15 @@ fun ShowBookDetails(book: Resource<Item>, navController: NavController) {
             bookToSave["title"] = bookData?.title.toString()
             bookToSave["authors"] = bookData?.authors.toString()
             bookToSave["description"] = bookData?.description.toString()
-            bookToSave["notes"] = "no notes for now"
+            bookToSave["notes"] = ""
             bookToSave["categories"] = bookData?.categories.toString()
             bookToSave["page_count"] = bookData?.pageCount.toString()
             bookToSave["book_photo_url"] = bookData?.imageLinks?.thumbnail.toString()
             bookToSave["published_date"] = bookData?.publishedDate.toString()
-            bookToSave["rating"] = 4.5
-            bookToSave["started_reading_at"] = Timestamp.now()
-            bookToSave["finished_reading_at"] = Timestamp.now()
+            bookToSave["rating"] = 0.0
+            //bookToSave["started_reading_at"] = Unit
+            //bookToSave["finished_reading_at"] = Unit
+            bookToSave["google_book_id"] = googleBookId.toString()
             bookToSave["user_id"] = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
             if (!bookToSave.isNullOrEmpty()) {

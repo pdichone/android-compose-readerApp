@@ -47,7 +47,11 @@ data class MBook(
 
     @get:PropertyName("user_id")
     @set:PropertyName("user_id")
-    var userId: String? = null
+    var userId: String? = null,
+
+    @get:PropertyName("google_book_id")
+    @set:PropertyName("google_book_id")
+    var googleBookId: String? = null
                 ) {
 
 //

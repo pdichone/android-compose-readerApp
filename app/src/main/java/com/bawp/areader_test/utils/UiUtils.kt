@@ -1,5 +1,8 @@
 package com.bawp.areader_test.utils
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,6 +28,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Timestamp
 
 
 data class LoadingState (val status: Status, val msg: String? = null) {
@@ -96,6 +100,7 @@ fun InputField(
     valueState: MutableState<String>,
     labelId: String,
     enabled: Boolean,
+    isSingleLine: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
     onAction: KeyboardActions = KeyboardActions.Default
@@ -104,7 +109,7 @@ fun InputField(
         value = valueState.value,
         onValueChange = { valueState.value = it },
         label = { Text(text =  labelId) },
-        singleLine = true,
+        singleLine = isSingleLine,
         textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colors.onBackground),
         modifier = modifier
             .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
@@ -231,4 +236,14 @@ fun SubmitButton(
         if (loading) CircularProgressIndicator(modifier = Modifier.size(25.dp))
         else Text(text = textId, modifier = Modifier.padding(5.dp))
     }
+}
+
+fun showToast(context: Context, msg:String){
+    Toast.makeText(context,msg, Toast.LENGTH_LONG).show()
+}
+fun formatDate(timestamp: Timestamp): String {
+
+    val date = android.icu.text.DateFormat.getDateInstance().format(timestamp.toDate()).toString().split(",")[0] //omit the year :)
+    Log.d("TAG", "formatDate: $date")
+    return date.toString()
 }

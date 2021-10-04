@@ -1,6 +1,8 @@
 package com.bawp.areader_test.screens.home
 
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,17 +28,28 @@ import com.bawp.areader_test.components.TitleSection
 import androidx.compose.material.Surface
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bawp.areader_test.model.MBook
+import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.icons.outlined.List
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
+import com.bawp.areader_test.R
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun Home(
     navController: NavController,
-     viewModel: HomeScreenViewModel = hiltViewModel()
+    viewModel: HomeScreenViewModel = hiltViewModel(),
         ) {
 
 
     Scaffold(
         topBar = {
-            ReaderAppBar(title = "A.Reader", icon = Icons.Default.Edit)
+            ReaderAppBar(title = "A.Reader", icon = Icons.Default.Edit, navController = navController)
 
         },//topBar
         floatingActionButton = {
@@ -53,10 +66,10 @@ fun Home(
 //            val bookInfo = produceState(initialValue = DataOrException<List<MBook>, Exception>()) {
 //                value = viewModel.data.value
 //            }.value
+                HomeContent(navController = navController, viewModel, /*items = viewModel.data.value.data!!*/)
 
-            HomeContent(navController = navController, items = viewModel.data.value.data!!)
+
         }
-
 
     }
 }
@@ -64,17 +77,21 @@ fun Home(
 @Composable
 fun HomeContent(
     navController: NavController,
-    items: List<MBook>
+    viewModel: HomeScreenViewModel,
                ) {
-    var listOfBooks = mutableListOf<MBook>()
-
+    var listOfBooks = emptyList<MBook>()
+    val currentUser = FirebaseAuth.getInstance().currentUser
 
     //Log.d("SER", "HomeContent: ${books.size}")
-  if (!items.isNullOrEmpty()) {
-      listOfBooks = items.toMutableList()
-  }
+    if (!viewModel.data.value.data.isNullOrEmpty()) {
+        //****Filter books by current, logged in user***
+        listOfBooks = viewModel.data.value.data?.toList()!!.filter { book ->
+              book.userId == currentUser?.uid.toString()
+        }
 
-    Log.d("SIZE", "HomeContent: ${listOfBooks.size}")
+    }
+
+    Log.d("SIZE", "HomeContent: ${viewModel.data.value.data?.size}")
 
 //    var bookss = listOf("Gerry",
 //        "Cabrito",
@@ -86,11 +103,38 @@ fun HomeContent(
 //        "Louco",
 //        "Louco")
     Column(Modifier.padding(2.dp), verticalArrangement = Arrangement.SpaceEvenly) {
-        TitleSection(label = "Your reading \n" + " activity right now...")
-        ReadingRightNowArea(listOfBooks, navController)
-        TitleSection(label = "Reading List")
-        BookListArea(listOfBooks)
+       Row(modifier = Modifier.align(alignment = Alignment.Start)) {
+           val currentUserName =
+               if (!FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) FirebaseAuth.getInstance().currentUser?.email.toString()
+                   .split("@")[0] else {
+                   "N/A"
+               }
+           TitleSection(label = "Your reading \n" + " activity right now...")
+           Spacer(modifier = Modifier.fillMaxWidth(fraction = 0.7f))
+           Column {
+               //Reference on how to use Icons in Compose: https://developer.android.com/reference/kotlin/androidx/compose/material/icons/Icons
+               Icon(
+                   Icons.Filled.AccountCircle,
+                   contentDescription = null,
+                   modifier = Modifier.clickable {
+                       //Take user to stats screen
+                       navController.navigate(ReaderScreens.ReaderStatsScreen.name)
 
+                   })
+               Text(currentUserName,
+                   modifier = Modifier.padding(2.dp),
+                   style = MaterialTheme.typography.overline,
+                   color = Color.Red,
+                   maxLines = 1,
+                   overflow = TextOverflow.Clip)
+               Divider()
+           }
+
+
+       }
+        ReadingRightNowArea(listOfBooks, navController, viewModel = viewModel)
+        TitleSection(label = "Reading List")
+        BookListArea(listOfBooks, viewModel = viewModel, navController = navController)
 
     }
 
@@ -101,7 +145,9 @@ fun ReaderAppBar(
     title: String,
     icon: ImageVector? = null,
     showProfile: Boolean = true,
+    navController: NavController
                 ) {
+
     TopAppBar(title = {
         Row {
             if (icon != null) {
@@ -112,70 +158,80 @@ fun ReaderAppBar(
             Text(text = title,
                 color = Color.Red.copy(alpha = 0.7f),
                 style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp))
+
+            Spacer(modifier = Modifier.width(150.dp))
+            if (showProfile) Row(horizontalArrangement = Arrangement.SpaceBetween) {
+
+
+
+            } else Surface {}
+
+
         }
     }, actions = {
         IconButton(onClick = {
 
+            //TODO: take user to stats Screen
+            FirebaseAuth.getInstance().signOut().run {
+                navController.navigate(ReaderScreens.LoginScreen.name)
+            }
+
 
         }) {
-            if (showProfile) Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                Column {
-                    Icon(
-                        Icons.Filled.AccountCircle, contentDescription = null,
+            Image(painter = painterResource(id = R.drawable.outline_logout_24),
+                contentDescription = "logout",
+                 modifier = Modifier.clip(shape = RoundedCornerShape(corner = CornerSize(12.dp))))
+//            Icon(imageVector = Icons.Filled.KeyboardArrowRight,
+//                contentDescription = "Arrow Right",
+//                modifier = Modifier.clickable {
+//                    FirebaseAuth.getInstance().signOut().run {
+//                        navController.navigate(ReaderScreens.LoginScreen.name)
+//                    }
+//
+//                })
 
-                        )
-                    Text("P.D",
-                        modifier = Modifier.padding(2.dp),
-                        style = MaterialTheme.typography.overline,
-                        color = Color.Red)
-                }
-                Icon(imageVector = Icons.Filled.KeyboardArrowRight,
-                    contentDescription = "Arrow Right",
-                    modifier = Modifier.clickable {
-
-
-                    })
-
-
-            } else Surface {}
 
         }
     }, backgroundColor = Color.Transparent, elevation = 0.dp)
 
 }
 
-
-
-
 @Composable
-fun ReadingRightNowArea(books: List<MBook>, navController: NavController) {
-    HorizontalScrollableComponent(books){
-         //TODO: Go to UpdateBookScreen
-        //navController.navigate(ReaderScreens.DetailScreen.name+"/$it")
-        //Log.d("Read", "ReadingRightNowArea: $it")
-        Log.d("Tapped", "ReadingRightNowArea: ${books[0].id}")
+fun ReadingRightNowArea(books: List<MBook>, navController: NavController, viewModel: HomeScreenViewModel) {
+    //Filter by reading now books!
+    val readingNowList = books.filter { book ->
+         book.startedReading != null && book.finishedReading == null
+    }
+    HorizontalScrollableComponent(readingNowList) {
+        //TODO: Let's pass an actual book object for simplicity!! NOPE!! Anti-pattern
+        navController.navigate(ReaderScreens.UpdateScreen.name + "/$it")
     }
 }
 
 @Composable
-fun BookListArea(books: List<MBook>) {
-    HorizontalScrollableComponent(books){}
+fun BookListArea(books: List<MBook>,navController: NavController, viewModel: HomeScreenViewModel) {
+
+    val addedBooks = books.filter { book ->
+        book.startedReading == null && book.finishedReading == null
+    }
+    HorizontalScrollableComponent(addedBooks) {
+        navController.navigate(ReaderScreens.UpdateScreen.name + "/$it")
+
+    }
 }
 
 @Composable
 fun FABContent(onTap: (String) -> Unit) {
     FloatingActionButton(onClick = { },
 
-        shape = RoundedCornerShape(50), backgroundColor = MaterialTheme.colors.secondary) {
+        shape = RoundedCornerShape(50), backgroundColor = Color(0xff92cbdf)) {
         IconButton(onClick = {
             onTap("")
 
         }) {
-            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Book", tint = Color.Red)
+            Icon(imageVector = Icons.Filled.Add,
+                contentDescription = "Add Book", tint = Color.White)
 
         }
-
     }
-
-
 }

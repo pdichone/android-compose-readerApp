@@ -8,31 +8,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.bawp.areader_test.components.ReaderAppBar
 import com.bawp.areader_test.model.Item
 import com.bawp.areader_test.navigation.ReaderScreens
-import com.bawp.areader_test.screens.details.DetailsViewModel
 import com.bawp.areader_test.utils.InputField
 import java.util.*
 
@@ -47,7 +39,7 @@ fun SearchScreen(
 
     Scaffold(
         topBar = {
-            AppBar(title = "Search books", icon = Icons.Default.ArrowBack, showProfile = false){
+            ReaderAppBar(title = "Search books", icon = Icons.Default.ArrowBack, showProfile = false){
                 navController.navigate(ReaderScreens.ReaderHomeScreen.name)
             }
 
@@ -137,14 +129,11 @@ fun BookList(
 fun BookRow(
     book: Item,
     navController: NavController,
-    viewModel: DetailsViewModel = hiltViewModel(),
            ) {
 
     Card(modifier = Modifier
         .clickable {
-
             //go to details screen and show more about the book
-            // Log.d("Click", "BookRow===>: ${book.volumeInfo.imageLinks!!.smallThumbnail}")
             navController.navigate(ReaderScreens.DetailScreen.name + "/${book.id}")
         }
         .fillMaxWidth()
@@ -222,50 +211,4 @@ fun BookRow(
 //
 //}
 
-@Composable
-fun AppBar(title: String, icon: ImageVector? = null, showProfile:Boolean = true, onBackArrowClicked: () -> Unit = {}) {
-    TopAppBar(
-        title = {
-            Row {
-                if (icon != null) {
-                    Icon(imageVector = icon, contentDescription = "Logo",
-                        tint = Color.Red.copy(alpha = 0.7f),
-                        modifier = Modifier.clickable {
-                            onBackArrowClicked.invoke()
-                        })
-                }
-                val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels
-                //Spacer(modifier = Modifier.width())
-                Text(text = title,
-                    modifier = Modifier.padding(start = screenWidth.dp.times(0.08f),
-                        bottom = 19.dp)
-                    ,
-                    color = Color.Red.copy(alpha = 0.7f),
-                    style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp))
-            }
-        },
-        actions = {
-            IconButton(onClick = {}) {
-                if (showProfile) Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                    Column {
-                        Icon(
-                            Icons.Filled.AccountCircle, contentDescription = null,
-
-                            )
-                        Text("P.D",
-                            modifier = Modifier.padding(2.dp),
-                            style = MaterialTheme.typography.overline,
-                            color = Color.Red)
-                    }
-                    Icon(imageVector = Icons.Filled.KeyboardArrowRight,
-                        contentDescription = "Arrow Right",
-                        modifier = Modifier.clickable {})
-
-                } else Surface() {}
-
-
-            }
-        }, backgroundColor = Color.Transparent, elevation = 0.dp)
-
-}
 

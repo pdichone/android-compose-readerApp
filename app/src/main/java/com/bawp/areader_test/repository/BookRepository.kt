@@ -32,11 +32,14 @@ class BookRepository @Inject constructor(
 
     suspend fun getBookInfo(bookId: String): Resource<Item> {
         val response = try {
+            Resource.Loading(data = true)
             api.getBookInfo(bookId)
+
 
         }catch (e: Exception){
             return Resource.Error("An error occurred")
         }
+        Resource.Loading(data = false)
         return Resource.Success(response)
 
     }
