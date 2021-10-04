@@ -32,7 +32,11 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
+    /*
+      Tip: Add android:windowSoftInputMode="adjustResize"  in the activity in manifest file
+      so that when keyboard pops up, the screen adjusts itself to accommodate
+      the keyboard
+     */
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,9 +58,7 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.background,
                        modifier = Modifier.fillMaxSize()
                            .padding(top = 46.dp)) {
-
                     ReaderApp()
-
                 }
             }
         }
