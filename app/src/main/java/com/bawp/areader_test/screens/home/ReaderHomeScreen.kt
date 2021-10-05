@@ -92,10 +92,8 @@ fun HomeContent(
         listOfBooks = viewModel.data.value.data?.toList()!!.filter { book ->
               book.userId == currentUser?.uid.toString()
         }
-
     }
-
-    Log.d("SIZE", "HomeContent: ${viewModel.data.value.data?.size}")
+    //Log.d("SIZE", "HomeContent: ${viewModel.data.value.data?.size}")
 
 //    var bookss = listOf("Gerry",
 //        "Cabrito",
@@ -125,11 +123,13 @@ fun HomeContent(
                        //Take user to stats screen
                        navController.navigate(ReaderScreens.ReaderStatsScreen.name)
 
-                   })
+                   }.size(45.dp),
+                   tint = MaterialTheme.colors.secondaryVariant)
                Text(currentUserName,
                    modifier = Modifier.padding(2.dp),
                    style = MaterialTheme.typography.overline,
                    color = Color.Red,
+                   fontSize = 15.sp,
                    maxLines = 1,
                    overflow = TextOverflow.Clip)
                Divider()
