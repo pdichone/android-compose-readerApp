@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-//test!
         setContent {
             AReaderTestTheme {
                 val systemUiController = rememberSystemUiController()
