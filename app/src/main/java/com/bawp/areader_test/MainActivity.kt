@@ -33,9 +33,12 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     /*
-      Tip: Add android:windowSoftInputMode="adjustResize"  in the activity in manifest file
+      Tip 1: Add android:windowSoftInputMode="adjustResize"  in the activity in manifest file
       so that when keyboard pops up, the screen adjusts itself to accommodate
       the keyboard
+      
+     TODO: Tip 2: Need to make this app darkmode compatible. Tested on Bonni's phone,
+      which is set to darkmode, and the colors didn't work :(
      */
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
