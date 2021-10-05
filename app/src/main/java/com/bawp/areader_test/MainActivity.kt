@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
       Tip 1: Add android:windowSoftInputMode="adjustResize"  in the activity in manifest file
       so that when keyboard pops up, the screen adjusts itself to accommodate
       the keyboard
-      
+
      TODO: Tip 2: Need to make this app darkmode compatible. Tested on Bonni's phone,
       which is set to darkmode, and the colors didn't work :(
      */
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
+//test!
         setContent {
             AReaderTestTheme {
                 val systemUiController = rememberSystemUiController()
